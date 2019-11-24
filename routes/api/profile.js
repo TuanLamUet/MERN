@@ -1,108 +1,26 @@
-const mongoose = require('mongoose');
+const express = require('express');
+const router = express.Router();
 
-const ProfileSchema = new mongoose.Schema({
-    user: {
-        type: mongoose.Schemaa.types.ObjectId,
-        ref:'user'
-    },
-     company: {
-         type: String 
-     },
-     status: {
-         type: String,
-         required: true
-     },
-     skills: {
-         type: [String],
-         required: true
-     },
-    bio: {
-        type: String
-    },
-    githubusername: {
-        type: String
-    },
-    experience: [
-        {
-            title: {
-                type: String,
-                required: true
-            },
-            company: {
-                type: String,
-                required: true
-            },
-            localtion: {
-                type: String
-            },
-            from: {
-                type: Date,
-                required: true
-            },
-            to: {
-                type: Date
-            },
-            current: {
-                type: Boolean,
-                defaut: false
-            },
-            description: {
-                type: String
-            },
+const auth = require('../../middleware/auth');
+const Profile = require('../../models/Profile');
+//@route GET api/profile/me
+//@desc Get current uers profile
+//@access Private
+router.get('/me', auth, async(req, res) => {
+    try {
+        const profile = await Profile.findOne({ user: req.user.id}).populate('user',
+        ['name', 'avatar']
+        );
+
+        if(!profile) {
+            return res.status(400).json({ msg: 'There is no profile for this user'});
         }
-    ],
-    education: [
-        {
-            school: {
-                type: String,
-                required: true
-            },
-            degree: {
-                type: String,
-                required: true
-            },
-            fieldofstudy: {
-                type: String,
-                required: true
-            },
-            from: {
-                type: Date,
-                required: true
-            },
-            to: {
-                type: Date
-            },
-            current: {
-                type: Boolean,
-                default: false
-            },
-            description: {
-                type: String
-            }
-         }
-    ],
-    social: {
-        youtube: {
-            type: String
-        },
-        twitter: {
-            type: String
-        },
-        facebook: {
-            type: String
-        },
-        linkedin: {
-            type: String
-        },
-        instagram: {
-            type: String
-        }
-    },
-    date: {
-        type: Date,
-        default: Date.now 
+
+        res.json(profile);
+    } catch (err) {
+        console.log(err.message);
+        res.status(500).send('Server Error');
     }
 });
 
-module.exports = Profile = mongoose.model('profile', ProfileSchema);
-
+module.exports = router;
