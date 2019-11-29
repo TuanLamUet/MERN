@@ -12,7 +12,9 @@ const connectDB = async() => {
         await mongoose.connect('mongodb://localhost:27017/myapp', {
             useNewUrlParser: true,
             useUnifiedTopology: true,
-            useCreateIndex: true
+            useCreateIndex: true,
+            useFindAndModify: false
+
         });
         console.log('Mongodb Connected..');
     } catch(err) {
